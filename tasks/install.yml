@@ -31,17 +31,17 @@
     force_source: "{{ container_socket_proxy_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else container_socket_proxy_container_image_force_pull }}"
   register: result
-  retries: "{{ devture_playbook_help_container_retries_count }}"
-  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  retries: "{{ container_retry }}"
+  delay: "{{ container_retry_delay }}"
   until: result is not failed
 
 - name: Ensure container-socket-proxy container image is pulled via ansible.builtin.command
   when: sysd_docker_image_pull_method == 'command'
   ansible.builtin.command:
-    cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ container_socket_proxy_container_image }}"
+    cmd: "{{ sysd_docker_host_command }} pull {{ container_socket_proxy_container_image }}"
   register: result
-  retries: "{{ devture_playbook_help_container_retries_count }}"
-  delay: "{{ devture_playbook_help_container_retries_delay }}"
+  retries: "{{ container_retry }}"
+  delay: "{{ container_retry_delay }}"
   until: result is not failed
   changed_when: "'Downloaded newer image' in result.stdout"
 
@@ -58,7 +58,7 @@
   when: devture_systemd_docker_base_container_network_creation_method == 'command'
   ansible.builtin.command:
     cmd: >-
-      {{ devture_systemd_docker_base_host_command_docker }} network create
+      {{ sysd_docker_host_command }} network create
       {% if devture_systemd_docker_base_ipv6_enabled %}--ipv6{% endif %}
       {{ devture_systemd_docker_base_container_networks_driver_options_string }}
       {{ container_socket_proxy_container_network }}

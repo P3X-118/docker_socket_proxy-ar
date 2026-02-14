@@ -18,12 +18,12 @@ DefaultDependencies=no
 [Service]
 Type=simple
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ container_socket_proxy_identifier }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ container_socket_proxy_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ container_socket_proxy_identifier }} 2>/dev/null || true'
+ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ sysd_docker_host_command }} rm {{ container_socket_proxy_identifier }} 2>/dev/null || true'
 
 # We cannot use `--read-only` since 0.1.2, because of:
 # > /usr/local/bin/docker-entrypoint.sh: line 18: can't create /usr/local/etc/haproxy/haproxy.cfg: Read-only file system
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
+ExecStartPre={{ sysd_docker_host_command }} create \
       --rm \
       --name={{ container_socket_proxy_identifier }} \
       --log-driver=none \
@@ -40,13 +40,13 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
       {{ container_socket_proxy_container_image }}
 
 {% for network in container_socket_proxy_container_additional_networks %}
-ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} network connect {{ network }} {{ container_socket_proxy_identifier }}
+ExecStartPre={{ sysd_docker_host_command }} network connect {{ network }} {{ container_socket_proxy_identifier }}
 {% endfor %}
 
-ExecStart={{ devture_systemd_docker_base_host_command_docker }} start --attach {{ container_socket_proxy_identifier }}
+ExecStart={{ sysd_docker_host_command }} start --attach {{ container_socket_proxy_identifier }}
 
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ container_socket_proxy_identifier }} 2>/dev/null || true'
-ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ container_socket_proxy_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ sysd_docker_host_command }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ container_socket_proxy_identifier }} 2>/dev/null || true'
+ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ sysd_docker_host_command }} rm {{ container_socket_proxy_identifier }} 2>/dev/null || true'
 
 Restart=always
 RestartSec=30

@@ -34,7 +34,7 @@
       when: devture_systemd_docker_base_container_network_creation_method == 'command'
       ansible.builtin.command:
         cmd: >-
-          {{ devture_systemd_docker_base_host_command_docker }} network rm
+          {{ sysd_docker_host_command }} network rm
           {{ container_socket_proxy_container_network }}
       register: network_deletion_result
       changed_when: container_socket_proxy_container_network in network_deletion_result.stdout
